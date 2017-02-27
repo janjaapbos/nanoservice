@@ -23,7 +23,7 @@ SOFTWARE.
 
 '''
 
-import nanomsg
+from nanoservice import nanomsg, nnpy
 import logging
 
 from .error import SubscriberError
@@ -45,7 +45,10 @@ class Subscriber(Endpoint, Process):
                  socket=None, bind=True, timeouts=(None, None)):
 
         # Defaults
-        socket = socket or nanomsg.Socket(nanomsg.SUB)
+        if nanomsg:
+            socket = socket or nanomsg.Socket(nanomsg.SUB)
+        else:
+            socket = socket or nnpy.Socket(nnpy.AF_SP, nnpy.SUB)
         encoder = encoder or MsgPackEncoder()
 
         super(Subscriber, self).__init__(
@@ -73,7 +76,10 @@ class Subscriber(Endpoint, Process):
         """ Subscribe to something and register a function """
         self.methods[tag] = fun
         self.descriptions[tag] = description
-        self.socket.set_string_option(nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, tag)
+        if nanomsg:
+            self.socket.set_string_option(nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, tag)
+        else:
+            self.socket.setsockopt(nnpy.SUB, nnpy.SUB_SUBSCRIBE, tag)
 
     # pylint: disable=logging-format-interpolation
     # pylint: disable=duplicate-code
@@ -133,7 +139,10 @@ class Publisher(Endpoint):
                  socket=None, bind=False, timeouts=(None, None)):
 
         # Defaults
-        socket = socket or nanomsg.Socket(nanomsg.PUB)
+        if nanomsg:
+            socket = socket or nanomsg.Socket(nanomsg.PUB)
+        else:
+            socket = socket or nnpy.Socket(nnpy.AF_SP, nnpy.PUB)
         encoder = encoder or MsgPackEncoder()
 
         super(Publisher, self).__init__(

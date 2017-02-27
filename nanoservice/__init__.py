@@ -1,5 +1,11 @@
 """Main module for nanoservice"""
 
+try:
+    import nnpy
+    nanomsg = None
+except ImportError:
+    import nanomsg
+    nnpy = None
 
 from nanoservice.reqrep import Requester, Responder
 from nanoservice.pubsub import Subscriber, Publisher

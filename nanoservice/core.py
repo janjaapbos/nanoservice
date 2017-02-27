@@ -27,8 +27,7 @@ import sys
 import signal
 import logging
 import threading
-import nanomsg
-
+from nanoservice import nanomsg, nnpy
 from .error import EncodeError
 from .error import DecodeError
 from .error import AuthenticateError
@@ -89,12 +88,20 @@ class Endpoint(object):
                 'the timeout values for send and receive respectively')
 
         if send_timeout is not None:
-            self.socket.set_int_option(
-                nanomsg.SOL_SOCKET, nanomsg.SNDTIMEO, send_timeout)
+            if nanomsg:
+                self.socket.set_int_option(
+                    nanomsg.SOL_SOCKET, nanomsg.SNDTIMEO, send_timeout)
+            else:
+                self.socket.setsockopt(
+                    nnpy.SOL_SOCKET, nnpy.SNDTIMEO, send_timeout)
 
         if recv_timeout is not None:
-            self.socket.set_int_option(
-                nanomsg.SOL_SOCKET, nanomsg.RCVTIMEO, recv_timeout)
+            if nanomsg:
+                self.socket.set_int_option(
+                    nanomsg.SOL_SOCKET, nanomsg.RCVTIMEO, recv_timeout)
+            else:
+                self.socket.setsockopt(
+                    nnpy.SOL_SOCKET, nnpy.RCVTIMEO, recv_timeout)
 
     def send(self, payload):
         """ Encode and sign (optional) the send through socket """

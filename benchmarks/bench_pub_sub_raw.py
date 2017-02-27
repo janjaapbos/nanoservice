@@ -1,7 +1,6 @@
 import time
-import nanomsg
 from multiprocessing import Process
-from nanoservice import Subscriber, Publisher
+from nanoservice import nanomsg, nnpy, Subscriber, Publisher
 
 import util
 
@@ -10,7 +9,10 @@ def start_service(addr, n):
     """ Start a service """
 
     s = Subscriber(addr)
-    s.socket.set_string_option(nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, 'test')
+    if nanomsg:
+        s.socket.set_string_option(nanomsg.SUB, nanomsg.SUB_SUBSCRIBE, 'test')
+    else:
+        s.socket.setsockopt(nnpy.SUB, nnpy.SUB_SUBSCRIBE, 'test')
 
     started = time.time()
     for _ in range(n):

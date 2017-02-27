@@ -24,7 +24,7 @@ SOFTWARE.
 '''
 
 import uuid
-import nanomsg
+from nanoservice import nanomsg, nnpy
 import logging
 
 from .error import DecodeError
@@ -46,7 +46,10 @@ class Responder(Endpoint, Process):
                  socket=None, bind=True, timeouts=(None, None)):
 
         # Defaults
-        socket = socket or nanomsg.Socket(nanomsg.REP)
+        if nanomsg:
+            socket = socket or nanomsg.Socket(nanomsg.REP)
+        else:
+            socket = socket or nnpy.Socket(nnpy.AF_SP, nnpy.REP)
         encoder = encoder or MsgPackEncoder()
 
         super(Responder, self).__init__(
@@ -134,7 +137,10 @@ class Requester(Endpoint):
                  socket=None, bind=False, timeouts=(None, None)):
 
         # Defaults
-        socket = socket or nanomsg.Socket(nanomsg.REQ)
+        if nanomsg:
+            socket = socket or nanomsg.Socket(nanomsg.REQ)
+        else:
+            socket = socket or nnpy.Socket(nnpy.AF_SP, nnpy.REQ)
         encoder = encoder or MsgPackEncoder()
 
         super(Requester, self).__init__(
