@@ -66,6 +66,8 @@ class Endpoint(object):
     def initialize(self, timeouts):
         """ Bind or connect the nanomsg socket to some address """
 
+        self.socket.setsockopt(nnpy.SOL_SOCKET, nnpy.IPV4ONLY, 0)
+
         # Bind or connect to address
         if self.bind is True:
             self.socket.bind(self.address)
