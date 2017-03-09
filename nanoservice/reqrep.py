@@ -237,8 +237,8 @@ class Responder(Endpoint, Process):
             logging.error(
                 error_msg.format(error_msg, exception), exc_info=1)
 
-        else:
-            logging.debug('Service received payload: {}'.format(payload))
+        # else:
+        #    logging.debug('Service received payload: {}'.format(payload))
 
         if responses:
             self.send(responses)
@@ -288,7 +288,7 @@ class Requester(Endpoint):
         payload = self.build_payload(
             self.session_uuid, self.auth_token, method, args
         )
-        logging.debug('* Client will send payload: {}'.format(payload))
+        # logging.debug('* Client will send payload: {}'.format(payload))
         self.send(payload)
 
         responses = self.receive()
